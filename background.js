@@ -106,25 +106,11 @@ const injectedFunction = () => {
       .replace(/-[^-]*$/, '');
   };
 
-  const copyTextToClipboard = (text) => {
-    var copyFrom = document.createElement('textarea');
-    copyFrom.textContent = text;
-    document.body.appendChild(copyFrom);
-    copyFrom.select();
-    document.execCommand('copy');
-    copyFrom.blur();
-    document.body.removeChild(copyFrom);
-  };
 
   const formatted = formatTitle(document.title, document.URL);
-
-  if (!navigator.clipboard) {
-    copyTextToClipboard(formatted);
-  } else {
-    navigator.clipboard.writeText(formatted).catch((err) => {
-      console.error(err);
-    });
-  }
+  navigator.clipboard.writeText(formatted).catch((err) => {
+    console.error(err);
+  });
 };
 
 chrome.action.onClicked.addListener((tab) => {
