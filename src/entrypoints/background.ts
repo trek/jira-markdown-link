@@ -99,23 +99,29 @@
 
 */
 
-const injectedFunction = () => {
-  const formatTitle = (text, url) => {
-    return text
-      .replace(/^\[.+\]/, (match) => `${match}(${url})`)
-      .replace(/-[^-]*$/, '');
-  };
+import { browser } from 'wxt/browser';
 
+export default defineBackground(() => {
+  function injectedFunction() {
+    const formatTitle = (text: string, url: string) => {
+      return text
+        .replace(/^\[.+\]/, (match) => `${match}(${url})`)
+        .replace(/-[^-]*$/, '');
+    };
 
-  const formatted = formatTitle(document.title, document.URL);
-  navigator.clipboard.writeText(formatted).catch((err) => {
-    console.error(err);
-  });
-};
+    const formatted = formatTitle(document.title, document.URL);
+    console.log(formatted);
+    navigator.clipboard.writeText(formatted).catch((err) => {
+      console.error(err);
+    });
+  }
 
-chrome.action.onClicked.addListener((tab) => {
-  chrome.scripting.executeScript({
-    target: { tabId: tab.id },
-    function: injectedFunction
+  browser.action.onClicked.addListener((tab) => {
+    browser.scripting.executeScript({
+      target: {
+        tabId: tab.id || 0,
+      },
+      func: injectedFunction,
+    });
   });
 });
