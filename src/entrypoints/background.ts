@@ -100,28 +100,11 @@
 */
 
 import { browser } from 'wxt/browser';
-
 export default defineBackground(() => {
-  function injectedFunction() {
-    const formatTitle = (text: string, url: string) => {
-      return text
-        .replace(/^\[.+\]/, (match) => `${match}(${url})`)
-        .replace(/-[^-]*$/, '');
-    };
-
-    const formatted = formatTitle(document.title, document.URL);
-    console.log(formatted);
-    navigator.clipboard.writeText(formatted).catch((err) => {
-      console.error(err);
-    });
-  }
-
-  browser.action.onClicked.addListener((tab) => {
-    browser.scripting.executeScript({
-      target: {
-        tabId: tab.id || 0,
-      },
-      func: injectedFunction,
-    });
+  browser.action.onClicked.addListener(async () => {
+    const [tab] = await browser.tabs.query({ active: true, lastFocusedWindow: true });
+    if (tab.id) {
+      await browser.tabs.sendMessage(tab.id, {});
+    }
   });
 });
